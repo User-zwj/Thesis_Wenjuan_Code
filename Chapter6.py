@@ -61,22 +61,12 @@ model_rbf.add(tf.keras.layers.Dense(1))
 model_rbf.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(0.1))
 model_rbf.fit(listex,listey, epochs=1000, verbose=0)
 
-set_seed(12345)
-model_relu = tf.keras.Sequential()
-model_relu.add(tf.keras.layers.Dense(5,activation='relu'))
-model_relu.add(tf.keras.layers.Dense(1))
-model_relu.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(0.01))
-model_relu.fit(listex,listey, epochs=1500, verbose=0)
-
 preds_rbf = []
-preds_relu = []
 size = 100
 for j in np.linspace(-a,a,size):
     preds_rbf.append(model_rbf.predict([j]))
-    preds_relu.append(model_relu.predict([j]))
     
-fig, ax = plt.subplots()
-fig.set_size_inches(7, 5)
+fig = plt.figure(figsize=(7,5))
 plt.xticks(fontsize=13, rotation=0)
 plt.yticks(fontsize=13, rotation=0)
 plt.xlabel('input',fontsize=20)
@@ -87,41 +77,32 @@ plt.legend(prop={'size': 12});
 fig.savefig("images/NN_before_scale.png");
 
 #### After Scaling #####
-a = 40
-np.random.seed(12345)
-listex2 = np.linspace(-1,1,200)
-listey2 = ((a*listex2)**2 + 0.1*np.random.normal(0, 1, len(listex2)) )/a**2
+data = np.array((listex,listey)).T
+scaler = MinMaxScaler((-1,1))
+data_trans = scaler.fit_transform(data)
+xmax, ymax = scaler.data_max_
+xmin, ymin = scaler.data_min_
 
 set_seed(12345)
 model_rbf2 = tf.keras.Sequential()
 model_rbf2.add(tf.keras.layers.Dense(5,activation=rbf))
 model_rbf2.add(tf.keras.layers.Dense(1))
 model_rbf2.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(0.1))
-model_rbf2.fit(listex2,listey2, epochs=1000, verbose=0)
+model_rbf2.fit(data_trans[:,0],data_trans[:,1],epochs=1000, verbose=0)
 
-set_seed(12345)
-model_relu2 = tf.keras.Sequential()
-model_relu2.add(tf.keras.layers.Dense(5,activation='relu'))
-model_relu2.add(tf.keras.layers.Dense(1))
-model_relu2.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(0.01))
-model_relu2.fit(listex2,listey2, epochs=1500, verbose=0)
+x_test = np.linspace(xmin,xmax,100).reshape(-1,1)
+scaler = MinMaxScaler((-1,1))
+x_test_trans = scaler.fit_transform(x_test) 
+preds_rbf_trans = model_rbf2.predict(x_test_trans)
+preds_rbf2 = (preds_rbf_trans+1)*(ymax-ymin)/2+ymin
 
-preds_rbf2 = []
-preds_relu2 = []
-size = 100
-x = np.linspace(-1,1,size)
-for j in x:
-    preds_rbf2.append(model_rbf2.predict([j]))
-    preds_relu2.append(model_relu2.predict([j]))
-    
-fig, ax = plt.subplots()
-fig.set_size_inches(7, 5)
+fig = plt.figure(figsize=(7,5))
 plt.xticks(fontsize=13, rotation=0)
 plt.yticks(fontsize=13, rotation=0)
 plt.xlabel('input',fontsize=20)
 plt.ylabel("output",fontsize=20)
-plt.scatter(a*listex2, a**2*listey2, s=20, marker='v',color='g', label="Training")     #size of point
-plt.scatter(np.linspace(-a,a,size), a**2*np.array(preds_rbf2), s=10, marker='p', color='r', label="Predict(RBF)")
+plt.scatter(listex, listey, s=20, marker='v',color='g', label="Training")     #size of point
+plt.scatter(x_test, preds_rbf2, s=10, marker='p', color='r', label="Predict(RBF)")
 plt.legend(prop={'size': 12});
 fig.savefig("images/NN_after_scale.png");
 
