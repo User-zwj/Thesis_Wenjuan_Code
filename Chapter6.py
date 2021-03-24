@@ -468,7 +468,7 @@ plt.legend();
 fig.savefig("images/NN_sin2.png");
 
 ##### y=(x+3)(x-1)^2; Training size = 1000 #####
-epo_ls = 10*np.arange(1,11)
+epo_ls = 100*np.arange(1,11)
 hid_ls = np.arange(2,11) #1 is not good
 score_all = np.zeros((len(hid_ls),len(epo_ls)))
 ratio = [0.5, 0.5]

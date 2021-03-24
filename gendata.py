@@ -68,12 +68,12 @@ datapath = os.path.join(os.getcwd(),"Data")
 os.makedirs(datapath,exist_ok=True)
 
 hid_ls = np.arange(1,11)
-epo_ls = 10*np.arange(1,11)
 n_fold = 5
 
 ##############################################################
 ##### Generate datafiles Data/sin_1[1-10]1_split_MSE.mat #####
 ##############################################################
+epo_ls = 10*np.arange(1,11)
 np.random.seed(12345)
 X = np.pi*np.random.uniform(-1,1,size=1000)
 y = np.sin(X)
@@ -89,6 +89,7 @@ for i in range(len(hid_ls)):
 ###############################################################
 ##### Generate datafiles Data/sin5_1[1-10]1_split_MSE.mat #####
 ###############################################################
+epo_ls = 10*np.arange(1,11)
 np.random.seed(12345)
 X = np.pi*np.random.uniform(-1,1,size=5000)
 y = np.sin(X)
@@ -104,10 +105,27 @@ for i in range(len(hid_ls)):
 ###############################################################
 ##### Generate datafiles Data/poly_1[1-10]1_split_MSE.mat #####
 ###############################################################
+epo_ls = 100*np.arange(1,11)
 np.random.seed(12345)
 X = np.random.uniform(-3,3,size=1000)
 y = (X+3)*(X-1)**2
 st_name = "poly"
+for i in range(len(hid_ls)):
+    score = [func(X,y,n_fold,hid_ls[i],j) for j in epo_ls]  
+    train = [score[i][0] for i in range(len(score))]
+    test = [score[i][1] for i in range(len(score))]
+    filename = 'Data/%s_1%s1_split_MSE.mat'%(st_name,hid_ls[i]) 
+    data_dict = {'train':train, 'test':test}
+    sio.savemat(filename, data_dict)
+    
+###############################################################
+##### Generate datafiles Data/poly5_1[1-10]1_split_MSE.mat #####
+###############################################################
+epo_ls = 100*np.arange(1,11)
+np.random.seed(12345)
+X = np.random.uniform(-3,3,size=5000)
+y = (X+3)*(X-1)**2
+st_name = "poly5"
 for i in range(len(hid_ls)):
     score = [func(X,y,n_fold,hid_ls[i],j) for j in epo_ls]  
     train = [score[i][0] for i in range(len(score))]
