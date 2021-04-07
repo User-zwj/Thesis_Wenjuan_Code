@@ -404,12 +404,13 @@ fig.savefig("images/NN_Neurons_on_sin_rbf.png");
 #############################################
 ############## Cross-Validation #############
 ##### y=sin x; Training size = 1000 #####
+data_dir = "Data_Chp6"
 epo_ls = 10*np.arange(1,11)
 hid_ls = np.arange(2,11) #1 is not good
 score_all = np.zeros((len(hid_ls),len(epo_ls)))
 ratio = [0.0, 1.0]
 for i in range(len(hid_ls)):
-    filename = 'Data/sin_1%s1_split_MSE.mat'%(hid_ls[i])
+    filename = '%s/sin_1%s1_split_MSE.mat'%(data_dir,hid_ls[i])
     partial_data = sio.loadmat(filename)
     score_all[i] = ratio[0]*partial_data['train'] + ratio[1]*partial_data['test']    
 
@@ -431,7 +432,7 @@ hid_ls = np.arange(2,11) #1 is not good
 score_all = np.zeros((len(hid_ls),len(epo_ls)))
 ratio = [0.5, 0.5]
 for i in range(len(hid_ls)):
-    filename = 'Data/sin5_1%s1_split_MSE.mat'%(hid_ls[i])
+    filename = '%s/sin5_1%s1_split_MSE.mat'%(data_dir,hid_ls[i])
     partial_data = sio.loadmat(filename)
     score_all[i] = ratio[0]*partial_data['train'] + ratio[1]*partial_data['test'] 
 
@@ -452,7 +453,7 @@ hid_ls = np.arange(2,11) #1 is not good
 score_all = np.zeros((len(hid_ls),len(epo_ls)))
 ratio = [0.0, 1.0]
 for i in range(len(hid_ls)):
-    filename = 'Data/sin5_1%s1_split_MSE.mat'%(hid_ls[i])
+    filename = '%s/sin5_1%s1_split_MSE.mat'%(data_dir,hid_ls[i])
     partial_data = sio.loadmat(filename)
     score_all[i] = ratio[0]*partial_data['train'] + ratio[1]*partial_data['test']
 
@@ -474,7 +475,7 @@ score_all = np.zeros((len(hid_ls),len(epo_ls)))
 ratio = [0.5, 0.5]
 
 for i in range(len(hid_ls)):
-    filename = 'Data/poly_1%s1_split_MSE.mat'%(hid_ls[i])
+    filename = '%s/poly_1%s1_split_MSE.mat'%(data_dir,hid_ls[i])
     partial_data = sio.loadmat(filename)
     score_all[i] = ratio[0]*partial_data['train'] + ratio[1]*partial_data['test'] 
 

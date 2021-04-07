@@ -63,8 +63,9 @@ def func(X,y,n_fold,n_hid,n_epo,seed=12345):
     return np.mean(train_score), np.mean(test_score)
 
 
-#### To make it cleaner, create Directory "Data" to store all the data ####
-datapath = os.path.join(os.getcwd(),"Data")
+#### To make it cleaner, create Directory "Data_Chp6" to store all the data ####
+data_dir = "Data_Chp6"
+datapath = os.path.join(os.getcwd(),data_dir)
 os.makedirs(datapath,exist_ok=True)
 
 hid_ls = np.arange(1,11)
@@ -82,7 +83,7 @@ for i in range(len(hid_ls)):
     score = [func(X,y,n_fold,hid_ls[i],j) for j in epo_ls]  
     train = [score[i][0] for i in range(len(score))]
     test = [score[i][1] for i in range(len(score))]
-    filename = 'Data/%s_1%s1_split_MSE.mat'%(st_name,hid_ls[i]) 
+    filename = '%s/%s_1%s1_split_MSE.mat'%(data_dir,st_name,hid_ls[i]) 
     data_dict = {'train':train, 'test':test}
     sio.savemat(filename, data_dict)
 
@@ -98,7 +99,7 @@ for i in range(len(hid_ls)):
     score = [func(X,y,n_fold,hid_ls[i],j) for j in epo_ls]  
     train = [score[i][0] for i in range(len(score))]
     test = [score[i][1] for i in range(len(score))]
-    filename = 'Data/%s_1%s1_split_MSE.mat'%(st_name,hid_ls[i]) 
+    filename = '%s/%s_1%s1_split_MSE.mat'%(data_dir,st_name,hid_ls[i]) 
     data_dict = {'train':train, 'test':test}
     sio.savemat(filename, data_dict)
 
@@ -114,7 +115,7 @@ for i in range(len(hid_ls)):
     score = [func(X,y,n_fold,hid_ls[i],j) for j in epo_ls]  
     train = [score[i][0] for i in range(len(score))]
     test = [score[i][1] for i in range(len(score))]
-    filename = 'Data/%s_1%s1_split_MSE.mat'%(st_name,hid_ls[i]) 
+    filename = '%s/%s_1%s1_split_MSE.mat'%(data_dir,st_name,hid_ls[i]) 
     data_dict = {'train':train, 'test':test}
     sio.savemat(filename, data_dict)
     
@@ -130,6 +131,6 @@ for i in range(len(hid_ls)):
     score = [func(X,y,n_fold,hid_ls[i],j) for j in epo_ls]  
     train = [score[i][0] for i in range(len(score))]
     test = [score[i][1] for i in range(len(score))]
-    filename = 'Data/%s_1%s1_split_MSE.mat'%(st_name,hid_ls[i]) 
+    filename = '%s/%s_1%s1_split_MSE.mat'%(data_dir,st_name,hid_ls[i]) 
     data_dict = {'train':train, 'test':test}
     sio.savemat(filename, data_dict)
