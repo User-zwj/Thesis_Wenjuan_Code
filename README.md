@@ -2,6 +2,10 @@
 
 This repository is used to generate all figures and tables in the thesis.
 
+Note: TensorFlow version is 2.1. To update TensorFlow from an older version, you can run
+
+        pip install tensorflow --upgrade
+
 - Chapter 6
 
     - Way I:
