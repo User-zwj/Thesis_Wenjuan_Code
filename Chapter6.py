@@ -13,6 +13,21 @@ from tensorflow.random import set_seed
 from scipy.stats import gaussian_kde as kde
 import matplotlib.pyplot as plt
 
+####### Plot Formatting ######
+plt.rc('lines', linewidth = 4)
+plt.rc('xtick', labelsize = 13)
+plt.rc('ytick', labelsize = 13)
+plt.rc('legend',fontsize=14)
+plt.rcParams["font.family"] = "serif"
+plt.rcParams['axes.labelsize'] = 18
+plt.rcParams['axes.titlesize'] = 15
+plt.rcParams['lines.markersize'] = 6
+plt.rcParams['figure.figsize'] = (7.0, 5.0)
+
+#### To make it cleaner, create Directory "images" to store all the figures ####
+imagepath = os.path.join(os.getcwd(),"images")
+os.makedirs(imagepath,exist_ok=True)
+
 #######################################
 #Define the activation function
 def rbf(x):
@@ -40,10 +55,6 @@ def tf_rbf(x,name=None):
         y[0].set_shape(x.get_shape())     #when using with the code, it is used to specify the rank of the input.
     return y[0]
 
-#### To make it cleaner, create Directory "images" to store all the figures ####
-imagepath = os.path.join(os.getcwd(),"images")
-os.makedirs(imagepath,exist_ok=True)
-
 ##################################################
 ##### Feature Scaling and Data Preprocessing #####
 ##################################################
@@ -66,14 +77,13 @@ size = 100
 for j in np.linspace(-a,a,size):
     preds_rbf.append(model_rbf.predict([j]))
     
-fig = plt.figure(figsize=(7,5))
-plt.xticks(fontsize=13, rotation=0)
-plt.yticks(fontsize=13, rotation=0)
-plt.xlabel('input',fontsize=20)
-plt.ylabel("output",fontsize=20)
-plt.scatter(listex, listey, s=20, marker='v',color='g', label="Training")   
-plt.scatter(np.linspace(-a,a,size), np.array(preds_rbf), s=10, marker='p', color='r', label="Predict(RBF)")
-plt.legend(prop={'size': 12});
+fig = plt.figure()
+plt.xlabel('input')
+plt.ylabel("output")
+plt.scatter(listex, listey, marker='v',color='g', label="Training")     #size of point
+plt.scatter(np.linspace(-a,a,size), np.array(preds_rbf), marker='p', color='r', label="Predict (RBF)")
+plt.legend()
+plt.show();
 fig.savefig("images/NN_before_scale.png");
 
 #### After Scaling #####
@@ -96,14 +106,13 @@ x_test_trans = scaler.fit_transform(x_test)
 preds_rbf_trans = model_rbf2.predict(x_test_trans)
 preds_rbf2 = (preds_rbf_trans+1)*(ymax-ymin)/2+ymin
 
-fig = plt.figure(figsize=(7,5))
-plt.xticks(fontsize=13, rotation=0)
-plt.yticks(fontsize=13, rotation=0)
-plt.xlabel('input',fontsize=20)
-plt.ylabel("output",fontsize=20)
-plt.scatter(listex, listey, s=20, marker='v',color='g', label="Training")     #size of point
-plt.scatter(x_test, preds_rbf2, s=10, marker='p', color='r', label="Predict(RBF)")
-plt.legend(prop={'size': 12});
+fig = plt.figure()
+plt.xlabel('input')
+plt.ylabel("output")
+plt.scatter(listex, listey, marker='v',color='g', label="Training Data")     #size of point
+plt.scatter(x_test, preds_rbf2, marker='p', color='r', label="Predictions (RBF)")
+plt.legend()
+plt.show();
 fig.savefig("images/NN_after_scale.png");
 
 #############################################
@@ -200,14 +209,15 @@ x_lb = -1
 for i in map(int,bdry_arr_relu_on[:,1]):
     if bdry1_relu_on[i][-1] == 'left' and bdry1_relu_on[i][0]<x_rb: 
         x = np.linspace(bdry1_relu_on[i][0],x_rb,20)
-        plt.plot(x, [piece(weight_relu_on,i,val) for val in x], label=str(i)+'th neuron', linewidth=4)
+        plt.plot(x, [piece(weight_relu_on,i,val) for val in x], label='Neuron '+str(i), linewidth=4)
     elif bdry1_relu_on[i][-1] == 'right' and bdry1_relu_on[i][0]>x_lb:
         x = np.linspace(x_lb,bdry1_relu_on[i][0],20)
-        plt.plot(x, [piece(weight_relu_on,i,val) for val in x], label=str(i)+'th neuron', linewidth=4)
+        plt.plot(x, [piece(weight_relu_on,i,val) for val in x], label='Neuron '+str(i), linewidth=4)
 plt.xlim(-1,1)
 plt.ylim(-0.5,1.5)
-plt.title('After Scaling',fontsize=15)
-plt.legend(prop={'size': 14});
+plt.title('After Scaling')
+plt.legend()
+plt.show();
         
 plt.subplot(122)
 preds_relu_on = []
@@ -217,10 +227,11 @@ for j in np.linspace(-1,1,size):
 p = tf.reshape(tf.constant(preds_relu_on),len(preds_relu_on))
 error = tf.keras.losses.MSE(x_on1**2,p).numpy()
 plt.ylim(-0.5,1.5)
-plt.title('MSE=%.8f'%(error),fontsize=15)
-plt.scatter(x_on1, y_on1, s=40, label="trainings data")     
-plt.scatter(np.linspace(-1,1,size), np.array(preds_relu_on), s=3, label="predictions (relu)")
-plt.legend(prop={'size': 14});
+plt.title('MSE=%.8f'%(error))
+plt.scatter(x_on1, y_on1, label="Training Data")     #size of point
+plt.scatter(np.linspace(-1,1,size), np.array(preds_relu_on), s=10, label="Predictions (ReLU)")
+plt.legend()
+plt.show();
 fig.savefig("images/NN_Neurons_on_relu.png")
 
 #### Activated neurons when y=x^2 #####
@@ -260,11 +271,12 @@ for i in range(num_neuron):
     interval = overlap([-1,1],bdry_rbf_on[i])
     if len(interval)!=0:
         x = np.linspace(interval[0],interval[1],20)
-        plt.plot(x, [piece_rbf(weight_rbf_on,i,val) for val in x], label=str(i)+'th neuron',linewidth=4)
+        plt.plot(x, [piece_rbf(weight_rbf_on,i,val) for val in x], label='Neuron '+str(i),linewidth=4)
 plt.xlim(-1,1)
 plt.ylim(-2,2)
-plt.title('After Scaling',fontsize=15)
-plt.legend(prop={'size': 10}); 
+plt.title('After Scaling')
+plt.legend()
+plt.show();
 
 plt.subplot(122)
 preds_rbf_on = []
@@ -273,10 +285,11 @@ for j in np.linspace(-1,1,size):
     preds_rbf_on.append(model_rbf_on.predict([j]))
 p = tf.reshape(tf.constant(preds_rbf_on),len(preds_rbf_on))
 error_rbf_on = tf.keras.losses.MSE(x_on1**2,p).numpy()
-plt.title('MSE=%.8f'%(error_rbf_on),fontsize=15)
-plt.scatter(x_on1, y_on1, s=40, label="trainings data")     
-plt.scatter(np.linspace(-1,1,size), np.array(preds_rbf_on), s=2, label="predictions (rbf)")
-plt.legend(prop={'size': 14});
+plt.title('MSE=%.8f'%(error_rbf_on))
+plt.scatter(x_on1, y_on1, label="Training Data")     #size of point
+plt.scatter(np.linspace(-1,1,size), np.array(preds_rbf_on), s=10, label="Predictions (RBF)")
+plt.legend()
+plt.show();
 fig.savefig("images/NN_Neurons_on_rbf.png")
 
 #### Activated neurons when y=sin x #####
@@ -320,14 +333,15 @@ x_lb = -1
 for i in map(int,bdry_arr_sin[:,1]):
     if bdry1_sin[i][-1] == 'left' and bdry1_sin[i][0]<x_rb: 
         x = np.linspace(bdry1_sin[i][0],x_rb,20)
-        plt.plot(x, [piece(weight_sin,i,val) for val in x], label=str(i)+'th neuron', linewidth=4)
+        plt.plot(x, [piece(weight_sin,i,val) for val in x], label='Neuron '+str(i), linewidth=4)
     elif bdry1_sin[i][-1] == 'right' and bdry1_sin[i][0]>x_lb:
         x = np.linspace(x_lb,bdry1_sin[i][0],20)
-        plt.plot(x, [piece(weight_sin,i,val) for val in x], label=str(i)+'th neuron', linewidth=4)
+        plt.plot(x, [piece(weight_sin,i,val) for val in x], label='Neuron '+str(i), linewidth=4)
 plt.xlim(-1,1)
 plt.ylim(-1.5,1.5)
-plt.title('After Scaling',fontsize=15)
-plt.legend(prop={'size': 14});
+plt.title('After Scaling')
+plt.legend()
+plt.show();
 
 plt.subplot(122)
 preds_relu_sin = []
@@ -336,12 +350,13 @@ for j in np.linspace(-1,1,size):
     preds_relu_sin.append(model_relu_sin.predict([j]))
 p = tf.reshape(tf.constant(preds_relu_sin),len(preds_relu_sin))
 error = tf.keras.losses.MSE(np.sin(np.pi*x_on2),p).numpy()
-plt.title('MSE=%.8f'%(error),fontsize=15)
+plt.title('MSE=%.8f'%(error))
 plt.axhline(0,c='b',linestyle=':')
 plt.ylim(-1.5,1.5)
-plt.scatter(x_on2, y_on2, s=40, label="trainings data")     #size of point
-plt.scatter(np.linspace(-1,1,size), np.array(preds_relu_sin), s=3, label="predictions (relu)")
-plt.legend(prop={'size': 14});
+plt.scatter(x_on2, y_on2, label="Trainings Data")     #size of point
+plt.scatter(np.linspace(-1,1,size), np.array(preds_relu_sin), s=10, label="Predictions (ReLU)")
+plt.legend()
+plt.show();
 fig.savefig("images/NN_Neurons_on_sin_relu.png");
 
 #### Activated neurons when y=sin x #####
@@ -379,12 +394,13 @@ for i in range(2):
     interval = overlap([-1,1],bdry_sin[i])
     if len(interval)!=0:
         x = np.linspace(interval[0],interval[1],20)
-        plt.plot(x, [piece_rbf(weight_rbf_sin,i,val) for val in x], label=str(i)+'th neuron',linewidth=4)
+        plt.plot(x, [piece_rbf(weight_rbf_sin,i,val) for val in x], label='Neuron '+str(i),linewidth=4)
 plt.xlim(-1,1)
 plt.ylim(-2,2)
 plt.axhline(0,c='b',linestyle=':')
-plt.title('After Scaling',fontsize=15)
-plt.legend(prop={'size': 10}); 
+plt.title('After Scaling')
+plt.legend()
+plt.show();
 
 plt.subplot(122)
 preds_rbf_sin = []
@@ -393,12 +409,13 @@ for j in np.linspace(-1,1,size):
     preds_rbf_sin.append(model_rbf_sin.predict([j]))
 p = tf.reshape(tf.constant(preds_rbf_sin),len(preds_rbf_sin))
 error = tf.keras.losses.MSE(np.sin(np.pi*x_on2),p).numpy()
-plt.title('MSE=%.8f'%(error),fontsize=15)
+plt.title('MSE=%.8f'%(error))
 plt.axhline(0,c='b',linestyle=':')
-plt.scatter(x_on2, y_on2, s=40, label="trainings data")     
-plt.scatter(np.linspace(-1,1,size), np.array(preds_rbf_sin), s=2, label="predictions (rbf)")
+plt.scatter(x_on2, y_on2, label="Trainings Data")     
+plt.scatter(np.linspace(-1,1,size), np.array(preds_rbf_sin), s=10, label="predictions (RBF)")
 plt.ylim(-2,2)
-plt.legend(prop={'size': 14});
+plt.legend()
+plt.show();
 fig.savefig("images/NN_Neurons_on_sin_rbf.png");
 
 #############################################
@@ -416,13 +433,13 @@ for i in range(len(hid_ls)):
 
 fig = plt.figure(figsize=(10,5))
 for i in range(len(hid_ls)):
-    plt.semilogy(epo_ls, score_all[i,:], linewidth=3, label='%d'%(hid_ls[i]))
-plt.xticks(epo_ls,fontsize=13, rotation=0)
-plt.yticks(fontsize=13, rotation=0)
-plt.xlabel('Number of epochs',fontsize=20)
-plt.ylabel('Error ($y=\sin x$)',fontsize=20)
-plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]),fontsize=20)
-plt.legend();
+    plt.semilogy(epo_ls, score_all[i,:], label='%d'%(hid_ls[i]))
+plt.xticks(epo_ls)
+plt.xlabel('Number of epochs')
+plt.ylabel('Error ($y=\sin x$)')
+plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]))
+plt.legend()
+plt.show();
 fig.savefig("images/NN_sin0.png");
 
 ##### y=sin x; Training size = 5000 #####
@@ -438,13 +455,13 @@ for i in range(len(hid_ls)):
 
 fig = plt.figure(figsize=(10,5))
 for i in range(len(hid_ls)):
-    plt.semilogy(epo_ls, score_all[i,:], linewidth=3, label='%d'%(hid_ls[i]))
-plt.xticks(epo_ls,fontsize=13, rotation=0)
-plt.yticks(fontsize=13, rotation=0)
-plt.xlabel('Number of epochs',fontsize=20)
-plt.ylabel('Error ($y=\sin x$)',fontsize=20)
-plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]),fontsize=20)
-plt.legend();
+    plt.semilogy(epo_ls, score_all[i,:], label='%d'%(hid_ls[i]))
+plt.xticks(epo_ls)
+plt.xlabel('Number of epochs')
+plt.ylabel('Error ($y=\sin x$)')
+plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]))
+plt.legend()
+plt.show();
 fig.savefig("images/NN_sin1.png");
 
 ## Training size = 1000, ratio = (0.0,1.0)
@@ -459,13 +476,13 @@ for i in range(len(hid_ls)):
 
 fig = plt.figure(figsize=(10,5))
 for i in range(len(hid_ls)):
-    plt.semilogy(epo_ls, score_all[i,:], linewidth=3, label='%d'%(hid_ls[i]))
-plt.xticks(epo_ls,fontsize=13, rotation=0)
-plt.yticks(fontsize=13, rotation=0)
-plt.xlabel('Number of epochs',fontsize=20)
-plt.ylabel('Error ($y=\sin x$)',fontsize=20)
-plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]),fontsize=20)
-plt.legend();
+    plt.semilogy(epo_ls, score_all[i,:], label='%d'%(hid_ls[i]))
+plt.xticks(epo_ls)
+plt.xlabel('Number of epochs')
+plt.ylabel('Error ($y=\sin x$)')
+plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]))
+plt.legend()
+plt.show();
 fig.savefig("images/NN_sin2.png");
 
 ##### y=(x+3)(x-1)^2; Training size = 1000 #####
@@ -481,13 +498,13 @@ for i in range(len(hid_ls)):
 
 fig = plt.figure(figsize=(10,5))
 for i in range(len(hid_ls)):
-    plt.semilogy(epo_ls, score_all[i,:], linewidth=3, label='%d'%(hid_ls[i]))
-plt.xticks(epo_ls,fontsize=13, rotation=0)
-plt.yticks(fontsize=13, rotation=0)
-plt.xlabel('Number of epochs',fontsize=20)
-plt.ylabel('Error (Polynomial)',fontsize=20)
-plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]),fontsize=20)
-plt.legend();
+    plt.semilogy(epo_ls, score_all[i,:], label='%d'%(hid_ls[i]))
+plt.xticks(epo_ls)
+plt.xlabel('Number of epochs')
+plt.ylabel('Error (Polynomial)')
+plt.title('Error = %.1f*MSE_train+%.1f*MSE_test'%(ratio[0],ratio[1]))
+plt.legend()
+plt.show();
 fig.savefig("images/NN_poly1.png");
 
 ##########################################################
@@ -528,11 +545,10 @@ NN_dens = kde(NN_sample)    #pf_approx
 fig = plt.figure(figsize=(8,6))
 x = np.linspace(-3,3,100)
 plt.plot(x,pfinit_dens(x),'--',linewidth=6,color='r',label='Exact Push-forward')
-plt.plot(x,NN_dens(x),linewidth=3,color='b',label='Approximate Push-forward')   
-plt.xticks(fontsize=14, rotation=0)
-plt.yticks(fontsize=14, rotation=0)
-plt.xlabel('$\mathcal{D}$', fontsize=20)
-plt.legend(prop={'size': 14});
+plt.plot(x,NN_dens(x),color='b',label='Approximate Push-forward')   
+plt.xlabel('$\mathcal{D}$')
+plt.legend()
+plt.show();
 fig.savefig('images/NN_forward.png');
 
 ###########################
@@ -566,9 +582,8 @@ fig = plt.figure(figsize=(8,6))
 size = 100
 x = np.linspace(-1,1,size)
 plt.plot(x,beta.pdf(x, 2, 5, loc=0, scale=1),'--',linewidth=6,color='r',label='Exact')
-plt.plot(x,up_dens(x),linewidth=3,color='b',label='Updated')   
-plt.xticks(fontsize=14, rotation=0)
-plt.yticks(fontsize=14, rotation=0)
-plt.xlabel('$\Lambda$', fontsize=20)
-plt.legend(prop={'size': 14});
+plt.plot(x,up_dens(x),color='b',label='Updated')   
+plt.xlabel('$\Lambda$')
+plt.legend()
+plt.show();
 fig.savefig('images/NN_inverse.png');
