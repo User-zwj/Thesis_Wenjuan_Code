@@ -80,7 +80,7 @@ for j in np.linspace(-a,a,size):
 fig = plt.figure()
 plt.xlabel('input')
 plt.ylabel("output")
-plt.scatter(listex, listey, marker='v',color='g', label="Training")     #size of point
+plt.scatter(listex, listey, marker='v',color='g', label="Training Data")     #size of point
 plt.scatter(np.linspace(-a,a,size), np.array(preds_rbf), marker='p', color='r', label="Predict (RBF)")
 plt.legend()
 plt.show();
@@ -110,7 +110,7 @@ fig = plt.figure()
 plt.xlabel('input')
 plt.ylabel("output")
 plt.scatter(listex, listey, marker='v',color='g', label="Training Data")     #size of point
-plt.scatter(x_test, preds_rbf2, marker='p', color='r', label="Predictions (RBF)")
+plt.scatter(x_test, preds_rbf2, marker='p', color='r', label="Predict (RBF)")
 plt.legend()
 plt.show();
 fig.savefig("images/NN_after_scale.png");
