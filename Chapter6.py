@@ -11,6 +11,7 @@ import scipy.io as sio
 from scipy.stats import beta
 from tensorflow.random import set_seed
 from scipy.stats import gaussian_kde as kde
+from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 
 ####### Plot Formatting ######
